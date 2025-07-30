@@ -77,6 +77,22 @@ body {
   font-weight: bold;
 }
 
+.score-value.streak-current {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.score-value.streak-max {
+  color: #ff6b6b;
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+.score-value.play-time {
+  color: #4ecdc4;
+  text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+  font-family: 'Courier New', monospace;
+}
+
 .reset-button {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -114,8 +130,14 @@ body {
 
 .game-completed p {
   color: #666;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   font-size: 1.1rem;
+}
+
+.game-completed p:first-of-type {
+  color: #4ecdc4;
+  font-weight: bold;
+  font-size: 1.3rem;
 }
 
 .game-completed button {
@@ -127,6 +149,7 @@ body {
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 10px;
 }
 
 .game-completed button:hover {
@@ -146,5 +169,25 @@ body {
   
   .score-info {
     gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .score-value {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .score-info {
+    gap: 15px;
+  }
+  
+  .score-value {
+    font-size: 1.2rem;
+  }
+  
+  .score-label {
+    font-size: 0.8rem;
   }
 }
