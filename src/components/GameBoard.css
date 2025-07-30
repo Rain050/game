@@ -1,0 +1,49 @@
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 8px;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 1400px) {
+  .game-board {
+    gap: 6px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .game-board {
+    gap: 5px;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .game-board {
+    gap: 4px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-board {
+    gap: 3px;
+    padding: 8px;
+  }
+}
+
+/* Ensure the grid maintains aspect ratio on very small screens */
+@media (max-width: 400px) {
+  .game-board {
+    gap: 2px;
+    padding: 5px;
+  }
+}
