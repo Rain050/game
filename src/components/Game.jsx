@@ -9,13 +9,13 @@ const Game = () => {
   const [matchedCards, setMatchedCards] = useState([])
   const [score, setScore] = useState(0)
   const [mistakes, setMistakes] = useState(0)
-  const [currentStreak, setCurrentStreak] = useState(0) // 현재 연속 정답
-  const [maxStreak, setMaxStreak] = useState(0) // 최대 연속 정답
-  const [gamePhase, setGamePhase] = useState('preview') // preview, playing, completed
+  const [currentStreak, setCurrentStreak] = useState(0) // Current correct streak
+  const [maxStreak, setMaxStreak] = useState(0) // Maximum correct streak
+  const [gamePhase, setGamePhase] = useState('preview') // 'preview', 'playing', or 'completed'
   const [previewTimer, setPreviewTimer] = useState(60)
-  const [gameStartTime, setGameStartTime] = useState(null) // 게임 시작 시간
-  const [gameEndTime, setGameEndTime] = useState(null) // 게임 종료 시간
-  const [playTime, setPlayTime] = useState(0) // 현재 플레이 시간 (초)
+  const [gameStartTime, setGameStartTime] = useState(null) // Game start time
+  const [gameEndTime, setGameEndTime] = useState(null) // Game end time
+  const [playTime, setPlayTime] = useState(0) // Current play time in seconds
   const [isProcessing, setIsProcessing] = useState(false)
 
   // Initialize game
@@ -49,20 +49,20 @@ const Game = () => {
     return () => clearInterval(interval)
   }, [gamePhase, gameStartTime])
 
-  // Start game function
+  // Start the game
   const startGame = () => {
     setGamePhase('playing')
     setGameStartTime(Date.now())
   }
 
-  // Skip preview function
+  // Skip preview phase
   const skipPreview = () => {
     if (gamePhase === 'preview') {
       startGame()
     }
   }
 
-  // Give up function
+  // Give up during the game
   const giveUp = () => {
     if (gamePhase === 'playing') {
       setGamePhase('completed')
@@ -70,7 +70,7 @@ const Game = () => {
     }
   }
 
-  // Handle card click
+  // Handle card click event
   const handleCardClick = (cardIndex) => {
     if (gamePhase !== 'playing' || isProcessing) return
     if (flippedCards.includes(cardIndex) || matchedCards.includes(cardIndex)) return
@@ -86,31 +86,28 @@ const Game = () => {
       const firstCard = cards[firstIndex]
       const secondCard = cards[secondIndex]
 
-      // Check if cards match (same rank and same color)
       const isMatch = firstCard.rank === secondCard.rank && firstCard.color === secondCard.color
 
       setTimeout(() => {
         if (isMatch) {
-          // Match found
           const newMatchedCards = [...matchedCards, firstIndex, secondIndex]
           setMatchedCards(newMatchedCards)
           setScore(prev => prev + 1)
           setFlippedCards([])
-          
+
           // Update streak
           const newStreak = currentStreak + 1
           setCurrentStreak(newStreak)
           if (newStreak > maxStreak) {
             setMaxStreak(newStreak)
           }
-          
-          // Check if game is completed
+
+          // Check if game is complete
           if (newMatchedCards.length === cards.length) {
             setGamePhase('completed')
             setGameEndTime(Date.now())
           }
         } else {
-          // No match
           setMistakes(prev => prev + 1)
           setFlippedCards([])
           setCurrentStreak(0)
@@ -120,14 +117,14 @@ const Game = () => {
     }
   }
 
-  // Format time display
+  // Format seconds into mm:ss
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  // Get final play time
+  // Get final play duration
   const getFinalPlayTime = () => {
     if (gameEndTime && gameStartTime) {
       return Math.floor((gameEndTime - gameStartTime) / 1000)
@@ -135,12 +132,12 @@ const Game = () => {
     return playTime
   }
 
-  // Check if game was given up
+  // Determine if the game ended via giving up
   const wasGivenUp = () => {
     return gamePhase === 'completed' && matchedCards.length < cards.length
   }
 
-  // Reset game
+  // Reset the game state
   const resetGame = () => {
     const newCards = shuffleArray(generateCards())
     setCards(newCards)
@@ -157,6 +154,9 @@ const Game = () => {
     setPlayTime(0)
     setIsProcessing(false)
   }
+
+  const totalPairs = 26
+  const remainingPairs = totalPairs - score
 
   return (
     <div className="game-container">
@@ -186,7 +186,8 @@ const Game = () => {
             <>
               <h2>Game Over</h2>
               <p>You gave up after {formatTime(getFinalPlayTime())}</p>
-              <p>Score: {score} / 26</p>
+              <p>Completed: {score} / {totalPairs} pairs</p>
+              <p>Remaining: {remainingPairs} pairs</p>
               <p>Mistakes: {mistakes}</p>
               <p>Maximum streak: {maxStreak} consecutive matches</p>
             </>
@@ -194,6 +195,7 @@ const Game = () => {
             <>
               <h2>Congratulations!</h2>
               <p>You completed the game in {formatTime(getFinalPlayTime())}!</p>
+              <p>All {totalPairs} pairs matched!</p>
               <p>Mistakes: {mistakes}</p>
               <p>Maximum streak: {maxStreak} consecutive matches!</p>
             </>

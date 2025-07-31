@@ -13,12 +13,15 @@ const ScoreBoard = ({
   onSkipPreview, 
   onGiveUp 
 }) => {
+  const totalPairs = 26
+  const remainingPairs = totalPairs - score
+
   return (
     <div className="score-board">
       <div className="score-info">
         <div className="score-item">
-          <span className="score-label">Score:</span>
-          <span className="score-value">{score}</span>
+          <span className="score-label">Remaining:</span>
+          <span className="score-value">{remainingPairs}/{totalPairs}</span>
         </div>
         <div className="score-item">
           <span className="score-label">Mistakes:</span>
@@ -47,16 +50,16 @@ const ScoreBoard = ({
       </div>
       <div className="game-controls">
         {gamePhase === 'preview' && (
-          <button onClick={onSkipPreview} className="skip-button">
+          <button onClick={onSkipPreview} className="control-button">
             Skip Preview
           </button>
         )}
         {gamePhase === 'playing' && (
-          <button onClick={onGiveUp} className="give-up-button">
+          <button onClick={onGiveUp} className="control-button">
             Give Up
           </button>
         )}
-        <button onClick={onReset} className="reset-button">
+        <button onClick={onReset} className="control-button">
           New Game
         </button>
       </div>
