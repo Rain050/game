@@ -1,6 +1,6 @@
 .card {
   width: 100%;
-  height: 80px;
+  height: 100%; 
   perspective: 1000px;
   cursor: pointer;
   transition: transform 0.2s ease;
@@ -86,12 +86,12 @@
 }
 
 .card-rank {
-  font-size: 1.2rem;
-  margin-bottom: 2px;
+  font-size: 1.8rem; /* 폰트 크기 증가 */
+  margin-bottom: 8px; /* 간격 증가 */
 }
 
 .card-suit {
-  font-size: 1rem;
+  font-size: 1.4rem; 
 }
 
 .card.matched .card-front {
@@ -104,43 +104,33 @@
 }
 
 @media (max-width: 1200px) {
-  .card {
-    height: 70px;
-  }
-  
   .card-rank {
-    font-size: 1rem;
+    font-size: 1.6rem;
   }
   
   .card-suit {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
   }
 }
 
 @media (max-width: 768px) {
-  .card {
-    height: 60px;
-  }
-  
   .card-rank {
-    font-size: 0.9rem;
+    font-size: 1.4rem;
+    margin-bottom: 6px;
   }
   
   .card-suit {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .card {
-    height: 50px;
-  }
-  
   .card-rank {
-    font-size: 0.8rem;
+    font-size: 1.2rem;
+    margin-bottom: 4px;
   }
   
   .card-suit {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
   }
 }

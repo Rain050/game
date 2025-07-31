@@ -9,9 +9,11 @@ const ScoreBoard = ({
   previewTimer, 
   playTime, 
   formatTime, 
+  soundEnabled,
   onReset, 
   onSkipPreview, 
-  onGiveUp 
+  onGiveUp,
+  onToggleSound
 }) => {
   const totalPairs = 26
   const remainingPairs = totalPairs - score
@@ -48,21 +50,29 @@ const ScoreBoard = ({
           </div>
         )}
       </div>
-      <div className="game-controls">
-        {gamePhase === 'preview' && (
-          <button onClick={onSkipPreview} className="control-button">
-            Skip Preview
-          </button>
-        )}
-        {gamePhase === 'playing' && (
-          <button onClick={onGiveUp} className="control-button">
-            Give Up
-          </button>
-        )}
-        <button onClick={onReset} className="control-button">
-          New Game
+    <div className="game-controls">
+      {gamePhase === 'preview' && (
+        <button onClick={onSkipPreview} className="control-button">
+          Skip Preview
         </button>
-      </div>
+      )}
+      {gamePhase === 'playing' && (
+        <button onClick={onGiveUp} className="control-button">
+          Give Up
+        </button>
+      )}
+      <button onClick={onReset} className="control-button">
+        New Game
+      </button>
+      <button 
+        onClick={onToggleSound} 
+        className={`sound-button ${soundEnabled ? 'sound-on' : 'sound-off'}`}
+        title={soundEnabled ? 'Sound On' : 'Sound Off'}
+      >
+        {soundEnabled ? '🔊' : '🔇'}
+      </button>
+    </div>
+
     </div>
   )
 }

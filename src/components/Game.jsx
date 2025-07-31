@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import GameBoard from './GameBoard'
 import ScoreBoard from './ScoreBoard'
 import { generateCards, shuffleArray } from '../utils/gameUtils'
+import { playFlipSound, playMatchSound, playMismatchSound, playVictorySound, toggleSound, isAudioEnabled } from '../utils/soundUtils'
 
 const Game = () => {
   const [cards, setCards] = useState([])
@@ -9,14 +10,15 @@ const Game = () => {
   const [matchedCards, setMatchedCards] = useState([])
   const [score, setScore] = useState(0)
   const [mistakes, setMistakes] = useState(0)
-  const [currentStreak, setCurrentStreak] = useState(0) // Current correct streak
-  const [maxStreak, setMaxStreak] = useState(0) // Maximum correct streak
-  const [gamePhase, setGamePhase] = useState('preview') // 'preview', 'playing', or 'completed'
+  const [currentStreak, setCurrentStreak] = useState(0)
+  const [maxStreak, setMaxStreak] = useState(0)
+  const [gamePhase, setGamePhase] = useState('preview')
   const [previewTimer, setPreviewTimer] = useState(60)
-  const [gameStartTime, setGameStartTime] = useState(null) // Game start time
-  const [gameEndTime, setGameEndTime] = useState(null) // Game end time
-  const [playTime, setPlayTime] = useState(0) // Current play time in seconds
+  const [gameStartTime, setGameStartTime] = useState(null)
+  const [gameEndTime, setGameEndTime] = useState(null)
+  const [playTime, setPlayTime] = useState(0)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [soundEnabled, setSoundEnabled] = useState(true)
 
   // Initialize game
   useEffect(() => {
@@ -49,20 +51,20 @@ const Game = () => {
     return () => clearInterval(interval)
   }, [gamePhase, gameStartTime])
 
-  // Start the game
+  // Start game function
   const startGame = () => {
     setGamePhase('playing')
     setGameStartTime(Date.now())
   }
 
-  // Skip preview phase
+  // Skip preview function
   const skipPreview = () => {
     if (gamePhase === 'preview') {
       startGame()
     }
   }
 
-  // Give up during the game
+  // Give up function
   const giveUp = () => {
     if (gamePhase === 'playing') {
       setGamePhase('completed')
@@ -70,11 +72,22 @@ const Game = () => {
     }
   }
 
-  // Handle card click event
+  // Toggle sound function
+  const handleToggleSound = () => {
+    const enabled = toggleSound()
+    setSoundEnabled(enabled)
+  }
+
+  // Handle card click
   const handleCardClick = (cardIndex) => {
     if (gamePhase !== 'playing' || isProcessing) return
     if (flippedCards.includes(cardIndex) || matchedCards.includes(cardIndex)) return
     if (flippedCards.length >= 2) return
+
+    // 카드 뒤집기 사운드 재생
+    if (soundEnabled) {
+      playFlipSound()
+    }
 
     const newFlippedCards = [...flippedCards, cardIndex]
     setFlippedCards(newFlippedCards)
@@ -86,45 +99,62 @@ const Game = () => {
       const firstCard = cards[firstIndex]
       const secondCard = cards[secondIndex]
 
+      // Check if cards match (same rank and same color)
       const isMatch = firstCard.rank === secondCard.rank && firstCard.color === secondCard.color
 
       setTimeout(() => {
         if (isMatch) {
+          // Match found
           const newMatchedCards = [...matchedCards, firstIndex, secondIndex]
           setMatchedCards(newMatchedCards)
           setScore(prev => prev + 1)
           setFlippedCards([])
-
+          
+          // 매치 성공 사운드 재생
+          if (soundEnabled) {
+            playMatchSound()
+          }
+          
           // Update streak
           const newStreak = currentStreak + 1
           setCurrentStreak(newStreak)
           if (newStreak > maxStreak) {
             setMaxStreak(newStreak)
           }
-
-          // Check if game is complete
+          
+          // Check if game is completed
           if (newMatchedCards.length === cards.length) {
             setGamePhase('completed')
             setGameEndTime(Date.now())
+            // 게임 완료 사운드 재생
+            if (soundEnabled) {
+              setTimeout(() => playVictorySound(), 300)
+            }
           }
         } else {
+          // No match
           setMistakes(prev => prev + 1)
           setFlippedCards([])
           setCurrentStreak(0)
+          
+          // 매치 실패 사운드 재생
+          if (soundEnabled) {
+            playMismatchSound()
+          }
         }
         setIsProcessing(false)
       }, 1000)
     }
   }
 
-  // Format seconds into mm:ss
+  // Format time display
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  // Get final play duration
+  // Get final play time
   const getFinalPlayTime = () => {
     if (gameEndTime && gameStartTime) {
       return Math.floor((gameEndTime - gameStartTime) / 1000)
@@ -132,12 +162,12 @@ const Game = () => {
     return playTime
   }
 
-  // Determine if the game ended via giving up
+  // Check if game was given up
   const wasGivenUp = () => {
     return gamePhase === 'completed' && matchedCards.length < cards.length
   }
 
-  // Reset the game state
+  // Reset game
   const resetGame = () => {
     const newCards = shuffleArray(generateCards())
     setCards(newCards)
@@ -169,9 +199,11 @@ const Game = () => {
         previewTimer={previewTimer}
         playTime={playTime}
         formatTime={formatTime}
+        soundEnabled={soundEnabled}
         onReset={resetGame}
         onSkipPreview={skipPreview}
         onGiveUp={giveUp}
+        onToggleSound={handleToggleSound}
       />
       <GameBoard 
         cards={cards}
